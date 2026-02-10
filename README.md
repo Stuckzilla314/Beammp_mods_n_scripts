@@ -55,6 +55,39 @@ BeamMP provides several events you can hook into:
 - `onVehicleSpawn` - When a vehicle is spawned
 - `onVehicleDeleted` - When a vehicle is deleted
 
+## 🏁 Available Plugins
+
+### RaceManager
+A comprehensive race management system with start/end gates, countdown timers, and real-time leaderboards.
+
+**Features:**
+- Set custom start and end gates for race tracks
+- Automatic 3-second countdown before race start
+- Vehicle freeze during countdown for fair starts
+- Live leaderboard showing distance to finish
+- Finish time recording and final standings
+
+**Quick Start:**
+```
+/race join              # Join the race
+/race leaderboard       # View current standings
+```
+
+**Admin Commands:**
+```
+/race setstart x,y,z    # Set race start gate
+/race setend x,y,z      # Set race finish line
+/race start             # Begin the race
+```
+
+See [RaceManager README](Resources/Server/RaceManager/README.md) for full documentation.
+
+### AdminTools
+Basic admin commands for server management (kick, announce).
+
+### WelcomeMessage
+Sends welcome messages to players when they join.
+
 ## 🔧 Installation
 
 1. Copy the desired plugin folder from `Resources/Server/` to your BeamMP server's `Resources/Server/` directory
