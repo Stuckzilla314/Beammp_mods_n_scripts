@@ -225,7 +225,13 @@ function onInit()
     RegisterEvent("derby", derbyEvent)
     RegisterEvent("freeroam", freeRoamEvent)
     
-    print("[EventManager] Registered " .. table.getn(events) .. " events")
+    -- Count events
+    local eventCount = 0
+    for _ in pairs(events) do
+        eventCount = eventCount + 1
+    end
+    
+    print("[EventManager] Registered " .. eventCount .. " events")
     print("[EventManager] Use /events to list available events")
 end
 
