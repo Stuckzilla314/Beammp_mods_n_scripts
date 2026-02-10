@@ -1,6 +1,10 @@
 -- AdminTools Plugin
 -- Basic admin commands for server management
 
+-- Command name lengths for validation
+local KICK_CMD_LENGTH = 4
+local ANNOUNCE_CMD_LENGTH = 8
+
 -- List of admin player IDs (add your admin IDs here)
 local admins = {
     -- Example: "12345", "67890"
@@ -37,11 +41,16 @@ function onChatMessage(playerID, playerName, message)
         -- Admin-only commands
         if isAdmin(playerID) then
             -- /kick command
-            if string.sub(command, 1, 4) == "kick" then
+            if string.sub(command, 1, KICK_CMD_LENGTH) == "kick" then
                 local targetID = string.match(command, "kick%s+(%d+)")
                 if targetID then
-                    MP.DropPlayer(tonumber(targetID), "You have been kicked by an admin")
-                    MP.SendChatMessage(-1, "Player " .. targetID .. " has been kicked")
+                    local targetIDNum = tonumber(targetID)
+                    if targetIDNum and MP.GetPlayerName(targetIDNum) then
+                        MP.DropPlayer(targetIDNum, "You have been kicked by an admin")
+                        MP.SendChatMessage(-1, "Player " .. targetID .. " has been kicked")
+                    else
+                        MP.SendChatMessage(playerID, "Error: Player ID " .. targetID .. " not found")
+                    end
                 else
                     MP.SendChatMessage(playerID, "Usage: /kick [player_id]")
                 end
@@ -49,7 +58,7 @@ function onChatMessage(playerID, playerName, message)
             end
             
             -- /announce command
-            if string.sub(command, 1, 8) == "announce" then
+            if string.sub(command, 1, ANNOUNCE_CMD_LENGTH) == "announce" then
                 local announcement = string.match(command, "announce%s+(.+)")
                 if announcement then
                     MP.SendChatMessage(-1, "[SERVER] " .. announcement)
@@ -60,7 +69,7 @@ function onChatMessage(playerID, playerName, message)
             end
         else
             -- Non-admin tried to use admin command
-            if command == "kick" or command == "announce" then
+            if string.sub(command, 1, KICK_CMD_LENGTH) == "kick" or string.sub(command, 1, ANNOUNCE_CMD_LENGTH) == "announce" then
                 MP.SendChatMessage(playerID, "You don't have permission to use this command")
                 return 1
             end

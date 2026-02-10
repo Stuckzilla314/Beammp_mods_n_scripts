@@ -155,7 +155,7 @@ function onInit()
 end
 
 function onChatMessage(playerID, playerName, message)
-    local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+    local timestamp = os.date("!%Y-%m-%d %H:%M:%S")  -- Use UTC time
     local logEntry = string.format("[%s] %s (ID: %d): %s\n", 
         timestamp, playerName, playerID, message)
     
