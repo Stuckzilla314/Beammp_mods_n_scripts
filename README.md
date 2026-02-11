@@ -55,6 +55,33 @@ BeamMP provides several events you can hook into:
 - `onVehicleSpawn` - When a vehicle is spawned
 - `onVehicleDeleted` - When a vehicle is deleted
 
+## 🎮 Available Plugins
+
+### DriftEvent
+Professional drift competition system with real-time scoring and leaderboards.
+
+**Features:**
+- Timed drift events with admin-configurable duration
+- Professional scoring based on Formula Drift criteria (angle, speed, proximity, time)
+- Real-time leaderboard tracking
+- Automatic event management with timer
+- Player statistics and final results display
+
+**Commands:**
+- `/driftstart [seconds]` - Start event (admin only)
+- `/driftstop` - End event (admin only)
+- `/driftstatus` - Check event status and your score
+- `/driftleaderboard` - View current rankings
+- `/drifthelp` - Show help
+
+**Documentation:** See [DriftEvent README](Resources/Server/DriftEvent/README.md)
+
+### AdminTools
+Basic admin commands for server management (kick, announce).
+
+### WelcomeMessage
+Sends welcome messages to players when they join.
+
 ## 🔧 Installation
 
 1. Copy the desired plugin folder from `Resources/Server/` to your BeamMP server's `Resources/Server/` directory
