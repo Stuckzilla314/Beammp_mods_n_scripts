@@ -41,6 +41,14 @@ local CHECK_INTERVAL = 1.0        -- How often to check positions (seconds)
 
 ## Commands
 
+### `/derbyhelp`
+**Permission**: All players  
+**Description**: Shows help information about demolition derby commands
+
+### `/derbystatus`
+**Permission**: All players  
+**Description**: Shows the current status of the derby event (running, idle, number of players remaining)
+
 ### `/startderby`
 **Permission**: Admin only  
 **Description**: Starts a demolition derby event with all currently connected players

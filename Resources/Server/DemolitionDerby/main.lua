@@ -224,6 +224,31 @@ function onChatMessage(playerID, playerName, message)
     if string.sub(message, 1, 1) == "/" then
         local command = string.lower(string.sub(message, 2))
         
+        -- /derbyhelp command (available to all)
+        if command == "derbyhelp" then
+            MP.SendChatMessage(playerID, "=== Demolition Derby Commands ===")
+            MP.SendChatMessage(playerID, "/derbyhelp - Show this help message")
+            MP.SendChatMessage(playerID, "/derbystatus - Show current event status")
+            if isAdmin(playerID) then
+                MP.SendChatMessage(playerID, "/startderby - Start a demolition derby event")
+                MP.SendChatMessage(playerID, "/stopderby - Stop the current event")
+            end
+            return 1
+        end
+        
+        -- /derbystatus command (available to all)
+        if command == "derbystatus" then
+            if eventState == EVENT_IDLE then
+                MP.SendChatMessage(playerID, "[DERBY] No event is currently running")
+            elseif eventState == EVENT_RUNNING then
+                local activeCount = getActiveParticipantCount()
+                MP.SendChatMessage(playerID, "[DERBY] Event is running - " .. activeCount .. " players remaining")
+            else
+                MP.SendChatMessage(playerID, "[DERBY] Event is ending...")
+            end
+            return 1
+        end
+        
         -- /startderby command
         if command == "startderby" then
             if not isAdmin(playerID) then

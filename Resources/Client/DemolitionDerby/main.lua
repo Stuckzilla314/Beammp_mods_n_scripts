@@ -10,7 +10,6 @@ local lastPositionCheck = 0
 
 -- Feature states
 local originalNodeGrabberEnabled = true
-local originalTeleportEnabled = true
 
 -- Get current vehicle position
 local function getCurrentVehiclePosition()
@@ -42,7 +41,6 @@ local function disableFeatures()
     end
     
     -- Note: Teleport and reset are handled server-side
-    -- We just track the state here for UI purposes
     
     print("[DemolitionDerby] Features disabled - Derby is active!")
 end
@@ -68,7 +66,7 @@ local function resetVehicle()
 end
 
 -- Update function called periodically
-local function onUpdate(dt)
+function M.onUpdate(dt)
     if not derbyActive then
         return
     end
@@ -103,8 +101,5 @@ MP.RegisterEvent("DerbyDisableFeatures", onDerbyDisableFeatures)
 MP.RegisterEvent("DerbyEnableFeatures", onDerbyEnableFeatures)
 MP.RegisterEvent("DerbyRequestPosition", onDerbyRequestPosition)
 MP.RegisterEvent("DerbyResetVehicle", onDerbyResetVehicle)
-
--- Register update function
-MP.RegisterEvent("onUpdate", onUpdate)
 
 return M
