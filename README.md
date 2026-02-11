@@ -8,6 +8,10 @@ This repository contains scripts and mods for a BeamMP server. BeamMP is a multi
 .
 ├── Resources/
 │   ├── Server/          # Server-side Lua scripts (plugins)
+│   │   ├── AdminTools/  # Comprehensive admin commands
+│   │   ├── EventManager/# Event management framework
+│   │   ├── CustomEvents/# Example custom events
+│   │   ├── WelcomeMessage/  # Welcome message plugin
 │   │   └── [PluginName]/
 │   │       └── main.lua # Entry point for each plugin
 │   └── Client/          # Client-side mods (vehicles, maps, etc.)
@@ -15,6 +19,49 @@ This repository contains scripts and mods for a BeamMP server. BeamMP is a multi
 ├── docs/                # Documentation for scripts and mods
 └── README.md
 ```
+
+## 🎮 Available Plugins
+
+### AdminTools
+Comprehensive admin command system with player management, teleportation, and vehicle control.
+
+**Features:**
+- Player management (kick, announcements)
+- Teleportation commands (tp, tphere, tpall)
+- Vehicle control (freeze, unfreeze, explode, reset)
+- Permission-based access
+
+**[View AdminTools Documentation](Resources/Server/AdminTools/README.md)**
+
+### EventManager
+Framework for managing and starting custom events and BeamNG races.
+
+**Features:**
+- Built-in events (race, derby, freeroam)
+- Event registration system
+- Admin commands to start/stop events
+- Extensible framework for custom events
+
+**[View EventManager Documentation](Resources/Server/EventManager/README.md)**
+
+### CustomEvents
+Example custom events demonstrating how to create your own events.
+
+**Included Events:**
+- Time Trial - Race against the clock
+- Tag - Classic tag game
+- Convoy - Follow-the-leader
+- Police Chase - Cops vs robbers
+- Car Show - Vehicle showcase
+
+**[View CustomEvents Documentation](Resources/Server/CustomEvents/README.md)**
+
+### WelcomeMessage
+Simple plugin that sends welcome messages when players join.
+
+**Features:**
+- Welcome message for joining players
+- Server-wide join/leave announcements
 
 ## 🚀 Getting Started
 
@@ -55,6 +102,7 @@ BeamMP provides several events you can hook into:
 - `onVehicleSpawn` - When a vehicle is spawned
 - `onVehicleDeleted` - When a vehicle is deleted
 
+
 ## 🏁 Available Plugins
 
 ### RaceManager
@@ -83,6 +131,26 @@ A comprehensive race management system with start/end gates, countdown timers, a
 ```
 
 See [RaceManager README](Resources/Server/RaceManager/README.md) for full documentation.
+
+### DriftEvent
+Professional drift competition system with real-time scoring and leaderboards.
+
+**Features:**
+- Timed drift events with admin-configurable duration
+- Professional scoring based on Formula Drift criteria (angle, speed, proximity, time)
+- Real-time leaderboard tracking
+- Automatic event management with timer
+- Player statistics and final results display
+
+**Commands:**
+- `/driftstart [seconds]` - Start event (admin only)
+- `/driftstop` - End event (admin only)
+- `/driftstatus` - Check event status and your score
+- `/driftleaderboard` - View current rankings
+- `/drifthelp` - Show help
+
+**Documentation:** See [DriftEvent README](Resources/Server/DriftEvent/README.md)
+
 
 ### AdminTools
 Basic admin commands for server management (kick, announce).
