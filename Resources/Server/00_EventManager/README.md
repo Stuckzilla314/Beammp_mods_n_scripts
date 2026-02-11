@@ -12,7 +12,7 @@ A comprehensive event management framework for BeamMP servers. Allows admins to 
 
 ## Installation
 
-1. Copy the `EventManager` folder to your BeamMP server's `Resources/Server/` directory
+1. Copy the `00_EventManager` folder to your BeamMP server's `Resources/Server/` directory
 2. Edit `main.lua` and add your admin player IDs to the `admins` table
 3. Restart your BeamMP server
 
@@ -168,16 +168,16 @@ RegisterEvent("tag", tagEvent)
 
 You can create a separate plugin for your custom events:
 
-1. Create a new folder in `Resources/Server/` (e.g., `CustomEvents`)
+1. Create a new folder in `Resources/Server/` (e.g., `10_CustomEvents`)
 2. Create a `main.lua` file with your custom events
 3. The EventManager plugin must be loaded before your custom events plugin
 
 Example structure:
 ```
 Resources/Server/
-├── EventManager/
+├── 00_EventManager/
 │   └── main.lua
-└── CustomEvents/
+└── 10_CustomEvents/
     └── main.lua
 ```
 

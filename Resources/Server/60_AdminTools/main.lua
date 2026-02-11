@@ -3,6 +3,8 @@
 
 -- List of admin player IDs (add your admin IDs here)
 local admins = {
+    "713962"
+    ,"0"
     -- Example: "12345", "67890"
 }
 

@@ -6,7 +6,7 @@ Successfully implemented a comprehensive admin command system and event manageme
 ## Components Delivered
 
 ### 1. AdminTools Plugin (Enhanced)
-**Location:** `Resources/Server/AdminTools/`
+**Location:** `Resources/Server/60_AdminTools/`
 
 **New Features:**
 - **Teleportation Commands:**
@@ -26,7 +26,7 @@ Successfully implemented a comprehensive admin command system and event manageme
   - Enhanced error handling
 
 ### 2. EventManager Plugin (New)
-**Location:** `Resources/Server/EventManager/`
+**Location:** `Resources/Server/00_EventManager/`
 
 **Features:**
 - Event registration framework
@@ -37,7 +37,7 @@ Successfully implemented a comprehensive admin command system and event manageme
 - Global RegisterEvent function for custom plugins
 
 ### 3. CustomEvents Plugin (New)
-**Location:** `Resources/Server/CustomEvents/`
+**Location:** `Resources/Server/10_CustomEvents/`
 
 **Example Events:**
 1. **Time Trial** - Race against the clock
@@ -51,9 +51,9 @@ Successfully implemented a comprehensive admin command system and event manageme
 - `README.md` - Main repository overview
 - `docs/ADMIN_GUIDE.md` - Comprehensive admin guide
 - `docs/QUICK_REFERENCE.md` - Quick command reference
-- `Resources/Server/AdminTools/README.md` - AdminTools documentation
-- `Resources/Server/EventManager/README.md` - EventManager documentation
-- `Resources/Server/CustomEvents/README.md` - CustomEvents documentation
+- `Resources/Server/60_AdminTools/README.md` - AdminTools documentation
+- `Resources/Server/00_EventManager/README.md` - EventManager documentation
+- `Resources/Server/10_CustomEvents/README.md` - CustomEvents documentation
 
 ## Technical Details
 
@@ -121,17 +121,17 @@ Successfully implemented a comprehensive admin command system and event manageme
 ## File Changes Summary
 
 **New Files:**
-- `Resources/Server/EventManager/main.lua`
-- `Resources/Server/EventManager/README.md`
-- `Resources/Server/CustomEvents/main.lua`
-- `Resources/Server/CustomEvents/README.md`
+- `Resources/Server/00_EventManager/main.lua`
+- `Resources/Server/00_EventManager/README.md`
+- `Resources/Server/10_CustomEvents/main.lua`
+- `Resources/Server/10_CustomEvents/README.md`
 - `docs/ADMIN_GUIDE.md`
 - `docs/QUICK_REFERENCE.md`
 
 **Modified Files:**
 - `README.md` - Added plugin information
-- `Resources/Server/AdminTools/main.lua` - Added 7 new commands
-- `Resources/Server/AdminTools/README.md` - Updated documentation
+- `Resources/Server/60_AdminTools/main.lua` - Added 7 new commands
+- `Resources/Server/60_AdminTools/README.md` - Updated documentation
 
 ## Testing Recommendations
 

@@ -350,9 +350,9 @@ If chaos erupts:
 
 ## Additional Resources
 
-- [AdminTools README](../Resources/Server/AdminTools/README.md)
-- [EventManager README](../Resources/Server/EventManager/README.md)
-- [CustomEvents README](../Resources/Server/CustomEvents/README.md)
+- [AdminTools README](../Resources/Server/60_AdminTools/README.md)
+- [EventManager README](../Resources/Server/00_EventManager/README.md)
+- [CustomEvents README](../Resources/Server/10_CustomEvents/README.md)
 - [BeamMP Documentation](https://docs.beammp.com/)
 - [BeamMP Scripting Wiki](https://wiki.beammp.com/en/Scripting)
 

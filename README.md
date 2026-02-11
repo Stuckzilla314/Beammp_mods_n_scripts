@@ -31,7 +31,7 @@ Comprehensive admin command system with player management, teleportation, and ve
 - Vehicle control (freeze, unfreeze, explode, reset)
 - Permission-based access
 
-**[View AdminTools Documentation](Resources/Server/AdminTools/README.md)**
+**[View AdminTools Documentation](Resources/Server/60_AdminTools/README.md)**
 
 ### EventManager
 Framework for managing and starting custom events and BeamNG races.
@@ -42,7 +42,7 @@ Framework for managing and starting custom events and BeamNG races.
 - Admin commands to start/stop events
 - Extensible framework for custom events
 
-**[View EventManager Documentation](Resources/Server/EventManager/README.md)**
+**[View EventManager Documentation](Resources/Server/00_EventManager/README.md)**
 
 ### CustomEvents
 Example custom events demonstrating how to create your own events.
@@ -54,7 +54,7 @@ Example custom events demonstrating how to create your own events.
 - Police Chase - Cops vs robbers
 - Car Show - Vehicle showcase
 
-**[View CustomEvents Documentation](Resources/Server/CustomEvents/README.md)**
+**[View CustomEvents Documentation](Resources/Server/10_CustomEvents/README.md)**
 
 ### WelcomeMessage
 Simple plugin that sends welcome messages when players join.
@@ -130,7 +130,7 @@ A comprehensive race management system with start/end gates, countdown timers, a
 /race finish name time  # Record a finish
 ```
 
-See [RaceManager README](Resources/Server/RaceManager/README.md) for full documentation.
+See [RaceManager README](Resources/Server/20_RaceManager/README.md) for full documentation.
 
 ### DriftEvent
 Professional drift competition system with real-time scoring and leaderboards.
@@ -149,7 +149,7 @@ Professional drift competition system with real-time scoring and leaderboards.
 - `/driftleaderboard` - View current rankings
 - `/drifthelp` - Show help
 
-**Documentation:** See [DriftEvent README](Resources/Server/DriftEvent/README.md)
+**Documentation:** See [DriftEvent README](Resources/Server/40_DriftEvent/README.md)
 
 
 ### AdminTools

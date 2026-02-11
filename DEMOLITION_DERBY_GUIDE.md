@@ -4,7 +4,7 @@
 
 1. **Copy Server Plugin**
    ```bash
-   cp -r Resources/Server/DemolitionDerby /path/to/beammp-server/Resources/Server/
+   cp -r Resources/Server/30_DemolitionDerby /path/to/beammp-server/Resources/Server/
    ```
 
 2. **Copy Client Mod**
@@ -13,7 +13,7 @@
    ```
 
 3. **Configure Admins**
-   - Edit `Resources/Server/DemolitionDerby/main.lua`
+   - Edit `Resources/Server/30_DemolitionDerby/main.lua`
    - Add your player IDs to the `admins` table (find IDs in server console when you connect)
 
 4. **Restart Server**
@@ -50,7 +50,7 @@
 
 ## Configuration Options
 
-Edit `Resources/Server/DemolitionDerby/main.lua` to adjust:
+Edit `Resources/Server/30_DemolitionDerby/main.lua` to adjust:
 
 ```lua
 local STATIONARY_THRESHOLD = 5.0  -- Seconds before elimination (default: 5)
@@ -77,4 +77,4 @@ local CHECK_INTERVAL = 1.0        -- Position check frequency (default: 1)
 
 ## Support
 
-Check the full README in `Resources/Server/DemolitionDerby/README.md` for detailed information.
+Check the full README in `Resources/Server/30_DemolitionDerby/README.md` for detailed information.

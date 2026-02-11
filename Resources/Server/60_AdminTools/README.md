@@ -12,7 +12,7 @@ A comprehensive admin command system for BeamMP servers. Provides essential admi
 
 ## Installation
 
-1. Copy the `AdminTools` folder to your BeamMP server's `Resources/Server/` directory
+1. Copy the `60_AdminTools` folder to your BeamMP server's `Resources/Server/` directory
 2. Edit `main.lua` and add your admin player IDs to the `admins` table
 3. Restart your BeamMP server
 

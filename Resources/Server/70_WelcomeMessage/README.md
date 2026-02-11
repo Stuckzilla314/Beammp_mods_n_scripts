@@ -11,7 +11,7 @@ A simple BeamMP server plugin that welcomes players when they join and announces
 
 ## Installation
 
-1. Copy the `WelcomeMessage` folder to your BeamMP server's `Resources/Server/` directory
+1. Copy the `70_WelcomeMessage` folder to your BeamMP server's `Resources/Server/` directory
 2. Restart your BeamMP server
 
 ## Configuration
