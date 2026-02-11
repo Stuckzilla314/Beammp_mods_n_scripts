@@ -18,9 +18,10 @@ local STATIONARY_THRESHOLD = 5.0  -- Seconds a car must be stationary to be elim
 local STATIONARY_DISTANCE = 2.0   -- Distance threshold in meters to consider a vehicle stationary
 local CHECK_INTERVAL = 1.0        -- How often to check vehicle positions (seconds)
 
--- Admin list
+-- Admin list (find player IDs in server logs when players connect)
 local admins = {
     -- Add admin IDs here, e.g., "12345", "67890"
+    -- To find your player ID, check the server console when you connect
 }
 
 -- Timer tracking
@@ -157,6 +158,8 @@ local function eliminatePlayer(playerID)
 end
 
 -- Check vehicle positions and eliminate stationary players
+-- Note: This function requests position updates from clients
+-- The actual checking happens in onPositionUpdate when clients respond
 local function checkVehiclePositions()
     if eventState ~= EVENT_RUNNING then
         return
@@ -165,6 +168,8 @@ local function checkVehiclePositions()
     local currentTime = os.time()
     local deltaTime = currentTime - lastCheckTime
     
+    -- Note: os.time() has second-level precision, so deltaTime will be 0 or 1+
+    -- This means checks happen approximately every CHECK_INTERVAL seconds, not exactly
     if deltaTime < CHECK_INTERVAL then
         return
     end
@@ -189,6 +194,7 @@ local function onPositionUpdate(playerID, data)
     -- Parse position data (expected format: "x,y,z")
     local x, y, z = string.match(data, "([^,]+),([^,]+),([^,]+)")
     if not x or not y or not z then
+        print("[DemolitionDerby] Warning: Received malformed position data from player " .. playerID)
         return
     end
     
@@ -295,7 +301,9 @@ function onVehicleReset(playerID, vehicleID)
     return 0  -- Allow the reset
 end
 
--- Periodic update function
+-- Periodic update function (optional - not all BeamMP versions support onTick)
+-- This is a fallback in case the client-side periodic updates fail
+-- The primary position tracking relies on client-side onUpdate events
 function onTick()
     checkVehiclePositions()
 end

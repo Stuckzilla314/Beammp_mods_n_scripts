@@ -38,6 +38,9 @@ local function disableFeatures()
     if scenetree.NodeGrabber then
         originalNodeGrabberEnabled = scenetree.NodeGrabber:isEnabled()
         scenetree.NodeGrabber:setEnabled(false)
+        print("[DemolitionDerby] Node grabber disabled")
+    else
+        print("[DemolitionDerby] Warning: NodeGrabber not found - cannot disable")
     end
     
     -- Note: Teleport and reset are handled server-side

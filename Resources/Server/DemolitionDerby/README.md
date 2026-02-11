@@ -31,6 +31,11 @@ local admins = {
 }
 ```
 
+**How to find Player IDs:**
+- Player IDs are shown in the server console when players connect
+- Look for messages like: `[Info] Player connected: PlayerName (ID: 12345)`
+- You can also use the server logs to find player IDs
+
 You can also adjust these settings:
 
 ```lua
