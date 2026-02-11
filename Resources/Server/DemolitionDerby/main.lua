@@ -9,6 +9,9 @@ local EVENT_ENDED = 2
 -- Event state
 local eventState = EVENT_IDLE
 
+-- EventManager integration state
+local derbyEventActive = false
+
 -- Player data tracking
 local participants = {}  -- playerID -> {eliminated = false, lastPosition = {x, y, z}, stationaryTime = 0}
 local eliminatedPlayers = {}  -- Set of eliminated player IDs
@@ -85,6 +88,7 @@ local function startEvent()
     end
     
     eventState = EVENT_RUNNING
+    derbyEventActive = true
     lastCheckTime = os.time()
     
     -- Announce event start
@@ -129,6 +133,7 @@ local function endEvent(winnerID)
     participants = {}
     eliminatedPlayers = {}
     eventState = EVENT_IDLE
+    derbyEventActive = false
 end
 
 -- Eliminate a player
@@ -236,8 +241,8 @@ function onChatMessage(playerID, playerName, message)
             MP.SendChatMessage(playerID, "/derbyhelp - Show this help message")
             MP.SendChatMessage(playerID, "/derbystatus - Show current event status")
             if isAdmin(playerID) then
-                MP.SendChatMessage(playerID, "/startderby - Start a demolition derby event")
-                MP.SendChatMessage(playerID, "/stopderby - Stop the current event")
+                MP.SendChatMessage(playerID, "/startevent derby - Start a demolition derby event")
+                MP.SendChatMessage(playerID, "/stopevent - Stop the current event")
             end
             return 1
         end
@@ -251,34 +256,6 @@ function onChatMessage(playerID, playerName, message)
                 MP.SendChatMessage(playerID, "[DERBY] Event is running - " .. activeCount .. " players remaining")
             else
                 MP.SendChatMessage(playerID, "[DERBY] Event is ending...")
-            end
-            return 1
-        end
-        
-        -- /startderby command
-        if command == "startderby" then
-            if not isAdmin(playerID) then
-                MP.SendChatMessage(playerID, "You don't have permission to use this command")
-                return 1
-            end
-            
-            local success, msg = startEvent()
-            MP.SendChatMessage(playerID, msg)
-            return 1
-        end
-        
-        -- /stopderby command (for testing/emergencies)
-        if command == "stopderby" then
-            if not isAdmin(playerID) then
-                MP.SendChatMessage(playerID, "You don't have permission to use this command")
-                return 1
-            end
-            
-            if eventState == EVENT_RUNNING then
-                endEvent(nil)
-                MP.SendChatMessage(playerID, "Event stopped by admin")
-            else
-                MP.SendChatMessage(playerID, "No event is running")
             end
             return 1
         end
@@ -317,7 +294,28 @@ end
 
 function onInit()
     print("[DemolitionDerby] Plugin loaded successfully!")
-    print("[DemolitionDerby] Use /startderby to begin an event (admin only)")
+    print("[DemolitionDerby] Use /startevent derby to begin an event (admin only)")
+
+    if RegisterEvent then
+        RegisterEvent("derby", {
+            name = "derby",
+            description = "Demolition derby event with elimination rules",
+            onStart = function(params)
+                local success = startEvent()
+                return success
+            end,
+            onStop = function()
+                if eventState == EVENT_RUNNING then
+                    endEvent(nil)
+                    return true
+                end
+                return false
+            end
+        })
+        print("[DemolitionDerby] Registered derby event with EventManager")
+    else
+        print("[DemolitionDerby] WARNING: EventManager not found. Derby event not registered")
+    end
 end
 
 -- Register events

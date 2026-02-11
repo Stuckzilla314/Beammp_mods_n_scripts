@@ -13,6 +13,9 @@ local raceState = {
     finishedPlayers = {} -- [{name, time, position}] ordered by finish
 }
 
+-- EventManager integration state
+local raceEventActive = false
+
 -- Configuration
 local GATE_RADIUS = 15 -- meters
 
@@ -167,6 +170,16 @@ end
 function onChatMessage(playerID, playerName, message)
     if string.sub(message, 1, 1) == "/" then
         local command = string.lower(string.sub(message, 2))
+
+        -- Require EventManager race event to be active for race commands
+        if string.sub(command, 1, 4) == "race" and not raceEventActive then
+            if command == "race" or command == "race help" then
+                MP.SendChatMessage(playerID, "Race event is not active. Use /startevent race to begin.")
+            else
+                MP.SendChatMessage(playerID, "Race event is not active. Use /startevent race to begin.")
+                return 1
+            end
+        end
         
         -- /race help
         if command == "race" or command == "race help" then
@@ -176,6 +189,7 @@ function onChatMessage(playerID, playerName, message)
             MP.SendChatMessage(playerID, "/race leaderboard - Show leaderboard")
             if isAdmin(playerID) then
                 MP.SendChatMessage(playerID, "=== Admin Commands ===")
+                MP.SendChatMessage(playerID, "/startevent race - Activate the race event")
                 MP.SendChatMessage(playerID, "/race setstart x,y,z[,radius] - Set start gate")
                 MP.SendChatMessage(playerID, "/race setend x,y,z[,radius] - Set end gate")
                 MP.SendChatMessage(playerID, "/race start - Start the race countdown")
@@ -339,6 +353,32 @@ function onChatMessage(playerID, playerName, message)
     return 0
 end
 
+-- EventManager event definition
+local raceEvent = {
+    name = "race",
+    description = "Race event with gates, countdown, and leaderboard",
+    onStart = function(params)
+        if raceEventActive then
+            return false
+        end
+        raceEventActive = true
+        raceState.status = "idle"
+        raceState.countdownTime = 0
+        raceState.finishedPlayers = {}
+        MP.SendChatMessage(-1, "[EVENT] Race event is now active. Use /race join and /race setstart/setend.")
+        return true
+    end,
+    onStop = function()
+        if not raceEventActive then
+            return false
+        end
+        raceEventActive = false
+        stopRace()
+        MP.SendChatMessage(-1, "[EVENT] Race event ended.")
+        return true
+    end
+}
+
 -- Handle player joining
 function onPlayerJoin(playerID)
     local playerName = MP.GetPlayerName(playerID)
@@ -358,6 +398,13 @@ function onInit()
     print("[RaceManager] Plugin loaded successfully!")
     print("[RaceManager] Use /race for commands")
     print("[RaceManager] " .. #admins .. " admin(s) configured")
+
+    if RegisterEvent then
+        RegisterEvent("race", raceEvent)
+        print("[RaceManager] Registered race event with EventManager")
+    else
+        print("[RaceManager] WARNING: EventManager not found. Race event not registered")
+    end
 end
 
 -- Handle vehicle spawns to track vehicle IDs

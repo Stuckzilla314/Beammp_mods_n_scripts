@@ -25,8 +25,12 @@ end
 
 -- Register a new event
 function RegisterEvent(eventName, eventData)
+    if events[eventName] then
+        print("[EventManager] Warning: Event '" .. eventName .. "' already registered. Overriding.")
+    else
+        eventCount = eventCount + 1
+    end
     events[eventName] = eventData
-    eventCount = eventCount + 1
     print("[EventManager] Registered event: " .. eventName)
 end
 
@@ -184,9 +188,9 @@ function onChatMessage(playerID, playerName, message)
         if isAdmin(playerID) then
             -- /startevent command
             if string.match(command, "^startevent%s") or command == "startevent" then
-                local eventName = string.match(command, "startevent%s+(%S+)")
+                local eventName, params = string.match(command, "^startevent%s+(%S+)%s*(.*)$")
                 if eventName then
-                    local success, msg = startEvent(eventName, "")
+                    local success, msg = startEvent(eventName, params or "")
                     MP.SendChatMessage(playerID, msg)
                     if success then
                         MP.SendChatMessage(-1, "[SERVER] Admin started event: " .. eventName)
@@ -250,3 +254,12 @@ MP.RegisterEvent("onPlayerDisconnect", "onPlayerDisconnect")
 
 -- Export functions for other plugins to use (make RegisterEvent globally accessible)
 _G.RegisterEvent = RegisterEvent
+_G.GetActiveEventName = function()
+    if activeEvent then
+        return activeEvent.name
+    end
+    return nil
+end
+_G.IsEventActive = function(eventName)
+    return activeEvent ~= nil and activeEvent.name == eventName
+end

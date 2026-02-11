@@ -239,50 +239,6 @@ function onChatMessage(playerID, playerName, message)
     if string.sub(message, 1, 1) == "/" then
         local command = string.lower(string.sub(message, 2))
         
-        -- /driftstart [duration] - Start drift event (admin only)
-        if string.sub(command, 1, 10) == "driftstart" then
-            if not isAdmin(playerID) then
-                MP.SendChatMessage(playerID, "You don't have permission to use this command")
-                return 1
-            end
-            
-            if driftEvent.active then
-                MP.SendChatMessage(playerID, "Drift event is already running!")
-                return 1
-            end
-            
-            local duration = tonumber(string.match(command, "driftstart%s+(%d+)"))
-            duration = duration or 300 -- Default 5 minutes
-            
-            if duration < 30 then
-                MP.SendChatMessage(playerID, "Duration must be at least 30 seconds")
-                return 1
-            end
-            
-            if duration > 3600 then
-                MP.SendChatMessage(playerID, "Duration cannot exceed 1 hour (3600 seconds)")
-                return 1
-            end
-            
-            startDriftEvent(duration)
-            return 1
-        end
-        
-        -- /driftstop - Stop drift event (admin only)
-        if command == "driftstop" then
-            if not isAdmin(playerID) then
-                MP.SendChatMessage(playerID, "You don't have permission to use this command")
-                return 1
-            end
-            
-            if not driftEvent.active then
-                MP.SendChatMessage(playerID, "No drift event is currently running")
-                return 1
-            end
-            
-            stopDriftEvent()
-            return 1
-        end
         
         -- /driftstatus - Check event status (available to all)
         if command == "driftstatus" then
@@ -350,8 +306,8 @@ function onChatMessage(playerID, playerName, message)
             MP.SendChatMessage(playerID, "/drifthelp - Show this help message")
             if isAdmin(playerID) then
                 MP.SendChatMessage(playerID, "=== ADMIN COMMANDS ===")
-                MP.SendChatMessage(playerID, "/driftstart [seconds] - Start event (default: 300s)")
-                MP.SendChatMessage(playerID, "/driftstop - End event early")
+                MP.SendChatMessage(playerID, "/startevent drift [seconds] - Start event (default: 300s)")
+                MP.SendChatMessage(playerID, "/stopevent - End event early")
             end
             return 1
         end
@@ -371,6 +327,38 @@ function onInit()
           ", Proximity=" .. SCORING.PROXIMITY .. 
           ", Speed=" .. SCORING.SPEED)
     print("[DriftEvent] Commands: /drifthelp for info")
+
+    if RegisterEvent then
+        RegisterEvent("drift", {
+            name = "drift",
+            description = "Drift event with scoring and leaderboard",
+            onStart = function(params)
+                if driftEvent.active then
+                    return false
+                end
+                local duration = tonumber(params)
+                duration = duration or 300
+                if duration < 30 then
+                    duration = 30
+                end
+                if duration > 3600 then
+                    duration = 3600
+                end
+                startDriftEvent(duration)
+                return true
+            end,
+            onStop = function()
+                if not driftEvent.active then
+                    return false
+                end
+                stopDriftEvent()
+                return true
+            end
+        })
+        print("[DriftEvent] Registered drift event with EventManager")
+    else
+        print("[DriftEvent] WARNING: EventManager not found. Drift event not registered")
+    end
 end
 
 function onPlayerJoin(playerID)
