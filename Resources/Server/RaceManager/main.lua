@@ -9,15 +9,12 @@ local raceState = {
     countdownTime = 0,
     countdownMax = 3, -- 3 second countdown
     raceStartTime = 0,
-    participants = {}, -- [playerID] = {vehicleID, name, position, distance, finishTime}
-    finishedPlayers = {}, -- [{name, time, position}] ordered by finish
-    frozenVehicles = {} -- [vehicleID] = playerID
+    participants = {}, -- [playerID] = {vehicleID, name, finishTime}
+    finishedPlayers = {} -- [{name, time, position}] ordered by finish
 }
 
 -- Configuration
 local GATE_RADIUS = 15 -- meters
-local UPDATE_INTERVAL = 0.1 -- seconds between position updates
-local lastUpdate = 0
 
 -- Admin list (add admin IDs here)
 local admins = {
@@ -96,19 +93,22 @@ local function startRace()
         return false, "Race is already in progress!"
     end
     
+    -- Check if there are any participants
+    if next(raceState.participants) == nil then
+        return false, "No players have joined the race!"
+    end
+    
     raceState.status = "countdown"
     raceState.countdownTime = raceState.countdownMax
-    raceState.participants = {}
     raceState.finishedPlayers = {}
-    raceState.frozenVehicles = {}
     
     -- Announce race start
     MP.SendChatMessage(-1, "========================================")
     MP.SendChatMessage(-1, "RACE STARTING!")
-    MP.SendChatMessage(-1, "Get to the start gate now!")
     MP.SendChatMessage(-1, "========================================")
+    MP.SendChatMessage(-1, "COUNTDOWN: 3...")
     
-    return true, "Race countdown will begin shortly!"
+    return true, "Race countdown started!"
 end
 
 -- Stop/reset the race
@@ -123,29 +123,6 @@ local function stopRace()
     MP.SendChatMessage(-1, "Race has been stopped!")
     
     return true
-end
-
--- Get current leaderboard
-local function getLeaderboard()
-    local standings = {}
-    
-    -- Add participants ordered by distance to end gate (closest first)
-    for playerID, data in pairs(raceState.participants) do
-        if not data.finishTime then
-            table.insert(standings, {
-                name = data.name,
-                distance = data.distance,
-                finished = false
-            })
-        end
-    end
-    
-    -- Sort by distance (ascending)
-    table.sort(standings, function(a, b)
-        return a.distance < b.distance
-    end)
-    
-    return standings
 end
 
 -- Display leaderboard
@@ -168,115 +145,24 @@ local function displayLeaderboard(playerID)
         end
     end
     
-    -- Show current standings
-    if raceState.status == "racing" then
-        local standings = getLeaderboard()
-        if #standings > 0 then
+    -- Show participants who haven't finished
+    if raceState.status == "racing" or raceState.status == "countdown" then
+        local unfinished = {}
+        for playerID, data in pairs(raceState.participants) do
+            if not data.finishTime then
+                table.insert(unfinished, data.name)
+            end
+        end
+        
+        if #unfinished > 0 then
             MP.SendChatMessage(targetID, "--- RACING ---")
-            for i, player in ipairs(standings) do
-                local distStr = string.format("%.1f", player.distance)
-                MP.SendChatMessage(targetID, i .. ". " .. player.name .. " - " .. distStr .. "m to finish")
+            for i, name in ipairs(unfinished) do
+                MP.SendChatMessage(targetID, i .. ". " .. name .. " - Still racing...")
             end
         end
     end
     
     MP.SendChatMessage(targetID, "============================")
-end
-
--- Update race state (called regularly)
-local function updateRace()
-    local currentTime = os.clock()
-    
-    if currentTime - lastUpdate < UPDATE_INTERVAL then
-        return
-    end
-    
-    lastUpdate = currentTime
-    
-    if raceState.status == "countdown" then
-        raceState.countdownTime = raceState.countdownTime - UPDATE_INTERVAL
-        
-        -- Check for countdown announcements
-        local countInt = math.ceil(raceState.countdownTime)
-        if countInt > 0 and math.abs(raceState.countdownTime - countInt) < UPDATE_INTERVAL then
-            MP.SendChatMessage(-1, "Race starts in " .. countInt .. "...")
-            
-            -- Freeze all vehicles during countdown
-            local players = MP.GetPlayers()
-            for _, playerID in ipairs(players) do
-                MP.SendChatMessage(playerID, "FREEZE! Don't move until countdown ends!")
-            end
-        end
-        
-        -- Countdown finished
-        if raceState.countdownTime <= 0 then
-            raceState.status = "racing"
-            raceState.raceStartTime = currentTime
-            MP.SendChatMessage(-1, "========================================")
-            MP.SendChatMessage(-1, "GO! GO! GO!")
-            MP.SendChatMessage(-1, "========================================")
-        end
-        
-    elseif raceState.status == "racing" then
-        -- Update participant positions and distances
-        -- Note: In a real implementation, you'd get actual vehicle positions from BeamMP
-        -- For now, we'll track based on what data we can get
-        
-        -- Check if all players have finished
-        local allFinished = true
-        for playerID, data in pairs(raceState.participants) do
-            if not data.finishTime then
-                allFinished = false
-                break
-            end
-        end
-        
-        if allFinished and next(raceState.participants) ~= nil then
-            raceState.status = "finished"
-            MP.SendChatMessage(-1, "========================================")
-            MP.SendChatMessage(-1, "RACE FINISHED!")
-            MP.SendChatMessage(-1, "========================================")
-            displayLeaderboard(-1)
-        end
-    end
-end
-
--- Handle vehicle position updates (simulated - would need actual position data from client)
-local function checkVehiclePosition(playerID, vehicleID, position)
-    if raceState.status ~= "racing" then
-        return
-    end
-    
-    -- Check if player is in participants
-    if not raceState.participants[playerID] then
-        return
-    end
-    
-    local data = raceState.participants[playerID]
-    
-    -- Update position and distance to end gate
-    data.position = position
-    if raceState.endGate then
-        data.distance = calculateDistance(
-            position.x, position.y, position.z,
-            raceState.endGate.x, raceState.endGate.y, raceState.endGate.z
-        )
-        
-        -- Check if player crossed finish line
-        if not data.finishTime and isInGate(position, raceState.endGate) then
-            local finishTime = os.clock() - raceState.raceStartTime
-            data.finishTime = finishTime
-            
-            -- Add to finished players list
-            table.insert(raceState.finishedPlayers, {
-                name = data.name,
-                time = finishTime,
-                position = #raceState.finishedPlayers + 1
-            })
-            
-            MP.SendChatMessage(-1, data.name .. " finished in position #" .. #raceState.finishedPlayers .. "! Time: " .. string.format("%.2f", finishTime) .. "s")
-        end
-    end
 end
 
 -- Handle chat commands
@@ -294,7 +180,9 @@ function onChatMessage(playerID, playerName, message)
                 MP.SendChatMessage(playerID, "=== Admin Commands ===")
                 MP.SendChatMessage(playerID, "/race setstart x,y,z[,radius] - Set start gate")
                 MP.SendChatMessage(playerID, "/race setend x,y,z[,radius] - Set end gate")
-                MP.SendChatMessage(playerID, "/race start - Start the race")
+                MP.SendChatMessage(playerID, "/race start - Start the race countdown")
+                MP.SendChatMessage(playerID, "/race countdown - Progress countdown (use 3x)")
+                MP.SendChatMessage(playerID, "/race finish [player] [time] - Record finish")
                 MP.SendChatMessage(playerID, "/race stop - Stop/reset the race")
             end
             return 1
@@ -305,9 +193,7 @@ function onChatMessage(playerID, playerName, message)
             if raceState.status == "idle" or raceState.status == "countdown" then
                 raceState.participants[playerID] = {
                     name = playerName,
-                    vehicleID = -1, -- Would need to get actual vehicle ID
-                    position = {x = 0, y = 0, z = 0},
-                    distance = 999999,
+                    vehicleID = -1, -- Will be updated when vehicle spawns
                     finishTime = nil
                 }
                 MP.SendChatMessage(playerID, "You joined the race!")
@@ -368,6 +254,71 @@ function onChatMessage(playerID, playerName, message)
                 return 1
             end
             
+            -- /race countdown - Progress the countdown (manual trigger for each second)
+            if command == "race countdown" then
+                if raceState.status == "countdown" then
+                    raceState.countdownTime = raceState.countdownTime - 1
+                    if raceState.countdownTime > 0 then
+                        MP.SendChatMessage(-1, "COUNTDOWN: " .. raceState.countdownTime .. "...")
+                        MP.SendChatMessage(-1, "FREEZE! Don't move until GO!")
+                        MP.SendChatMessage(playerID, "Countdown progressed. Use /race countdown again for next count.")
+                    else
+                        -- Start the race
+                        raceState.status = "racing"
+                        raceState.raceStartTime = os.clock()
+                        MP.SendChatMessage(-1, "========================================")
+                        MP.SendChatMessage(-1, "GO! GO! GO!")
+                        MP.SendChatMessage(-1, "========================================")
+                        MP.SendChatMessage(playerID, "Race has begun!")
+                    end
+                elseif raceState.status == "idle" then
+                    MP.SendChatMessage(playerID, "No countdown in progress. Use /race start first.")
+                else
+                    MP.SendChatMessage(playerID, "Race is already running!")
+                end
+                return 1
+            end
+            
+            -- /race finish [playerName] [time] - Manually record a finish
+            if string.sub(command, 1, 11) == "race finish" then
+                if raceState.status ~= "racing" then
+                    MP.SendChatMessage(playerID, "No race in progress!")
+                    return 1
+                end
+                
+                local playerName, timeStr = string.match(command, "race finish%s+(%S+)%s+(%S+)")
+                if playerName and timeStr then
+                    local finishTime = tonumber(timeStr)
+                    if finishTime then
+                        -- Find player in participants
+                        local foundPlayerID = nil
+                        for pID, data in pairs(raceState.participants) do
+                            if data.name == playerName then
+                                foundPlayerID = pID
+                                break
+                            end
+                        end
+                        
+                        if foundPlayerID and not raceState.participants[foundPlayerID].finishTime then
+                            raceState.participants[foundPlayerID].finishTime = finishTime
+                            table.insert(raceState.finishedPlayers, {
+                                name = playerName,
+                                time = finishTime,
+                                position = #raceState.finishedPlayers + 1
+                            })
+                            MP.SendChatMessage(-1, playerName .. " finished in position #" .. #raceState.finishedPlayers .. "! Time: " .. string.format("%.2f", finishTime) .. "s")
+                        else
+                            MP.SendChatMessage(playerID, "Player not found or already finished!")
+                        end
+                    else
+                        MP.SendChatMessage(playerID, "Invalid time format!")
+                    end
+                else
+                    MP.SendChatMessage(playerID, "Usage: /race finish [playerName] [time]")
+                end
+                return 1
+            end
+            
             -- /race stop
             if command == "race stop" then
                 stopRace()
@@ -394,11 +345,6 @@ function onPlayerDisconnect(playerID)
     end
 end
 
--- Called every tick
-function onTick()
-    updateRace()
-end
-
 -- Initialize plugin
 function onInit()
     print("[RaceManager] Plugin loaded successfully!")
@@ -406,12 +352,17 @@ function onInit()
     print("[RaceManager] " .. #admins .. " admin(s) configured")
 end
 
+-- Handle vehicle spawns to track vehicle IDs
+function onVehicleSpawn(playerID, vehicleID, vehicleData)
+    -- Update vehicle ID for participant if they're in the race
+    if raceState.participants[playerID] then
+        raceState.participants[playerID].vehicleID = vehicleID
+    end
+end
+
 -- Register events
 MP.RegisterEvent("onInit", "onInit")
 MP.RegisterEvent("onPlayerJoin", "onPlayerJoin")
 MP.RegisterEvent("onPlayerDisconnect", "onPlayerDisconnect")
 MP.RegisterEvent("onChatMessage", "onChatMessage")
-
--- Note: onTick is not a standard BeamMP event
--- In a real implementation, you would use a timer or the actual BeamMP update mechanism
--- For now, we'll simulate it with a simple approach
+MP.RegisterEvent("onVehicleSpawn", "onVehicleSpawn")

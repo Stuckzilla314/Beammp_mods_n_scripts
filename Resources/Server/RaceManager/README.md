@@ -4,11 +4,11 @@ A comprehensive race management system for BeamMP servers featuring start/end ga
 
 ## Features
 
-- **Start and End Gates**: Define race tracks by setting start and end gate positions
-- **Countdown System**: 3-second countdown before race starts
-- **Vehicle Freeze**: Prevents vehicle movement during countdown to ensure fair starts
-- **Live Leaderboard**: Tracks which racers are closest to the finish line during the race
-- **Finish Times**: Records and displays finish times and positions when racers cross the finish line
+- **Start and End Gates**: Define race tracks by setting start and end gate positions (primarily for reference)
+- **Countdown System**: Manual 3-second countdown before race starts
+- **Vehicle Freeze Notification**: Sends messages to players during countdown asking them not to move
+- **Leaderboard**: Tracks participants and their finish times
+- **Manual Finish Recording**: Admin can record finish times when racers cross the finish line
 - **Multiple Race States**: Manages race progression through idle, countdown, racing, and finished states
 
 ## Commands
@@ -31,6 +31,9 @@ A comprehensive race management system for BeamMP servers featuring start/end ga
   - Example: `/race setend 500,50,250,25` (uses 25m radius)
   
 - `/race start` - Start the race countdown
+- `/race countdown` - Progress the countdown by 1 second (use 3 times: 3, 2, 1, then race starts)
+- `/race finish [playerName] [time]` - Record a player's finish time
+  - Example: `/race finish Player1 45.23`
 - `/race stop` - Stop and reset the current race
 
 ## Setup
@@ -51,9 +54,11 @@ A comprehensive race management system for BeamMP servers featuring start/end ga
 3. **Start a Race**:
    - Players use `/race join` to enter the race
    - Admin uses `/race start` to begin countdown
-   - After 3-second countdown, race begins
-   - Players race to the finish line
-   - Leaderboard shows live standings and finish times
+   - Admin uses `/race countdown` three times (for 3, 2, 1)
+   - After third countdown, race begins automatically
+   - Admin uses `/race finish [playerName] [time]` to record each finish
+     - Time should be measured from race start
+   - View results with `/race leaderboard`
 
 ## How It Works
 
@@ -66,14 +71,16 @@ A comprehensive race management system for BeamMP servers featuring start/end ga
 
 ### Leaderboard System
 
-The leaderboard has two sections:
+The leaderboard displays:
 
 1. **Finished**: Shows players who completed the race, ordered by finish position with times
-2. **Racing**: Shows active racers ordered by distance to finish line (closest first)
+2. **Racing**: Shows active racers who haven't finished yet
+
+Note: Since BeamMP doesn't provide automatic real-time vehicle position tracking, finish times must be recorded manually by an admin using the `/race finish` command.
 
 ### Vehicle Freeze
 
-During the countdown phase, the system notifies all players not to move their vehicles. This ensures all racers start at the same time when the countdown reaches zero.
+During the countdown phase, the system sends messages to all players asking them not to move their vehicles. This is an honor system - players are expected to wait until "GO!" is announced. BeamMP does not provide server-side vehicle control APIs to enforce this automatically.
 
 ## Example Race Setup
 
@@ -93,23 +100,35 @@ Server: Player2 joined the race!
 Admin: /race start
 Server: ========================================
 Server: RACE STARTING!
-Server: Get to the start gate now!
 Server: ========================================
-Server: Race starts in 3...
-Server: Race starts in 2...
-Server: Race starts in 1...
+Server: COUNTDOWN: 3...
+
+Admin: /race countdown
+Server: COUNTDOWN: 2...
+Server: FREEZE! Don't move until GO!
+
+Admin: /race countdown
+Server: COUNTDOWN: 1...
+Server: FREEZE! Don't move until GO!
+
+Admin: /race countdown
 Server: ========================================
 Server: GO! GO! GO!
 Server: ========================================
 
-[Players race to finish line]
+[Players race to finish line - admin watches]
 
+Admin: /race finish Player1 45.23
 Server: Player1 finished in position #1! Time: 45.23s
+
+Admin: /race finish Player2 47.89
 Server: Player2 finished in position #2! Time: 47.89s
 
 Server: ========================================
 Server: RACE FINISHED!
 Server: ========================================
+
+Player1: /race leaderboard
 Server: ======== LEADERBOARD ========
 Server: --- FINISHED ---
 Server: 1. Player1 - 45.23s
@@ -122,37 +141,37 @@ Server: ============================
 Edit these values in `main.lua` to customize behavior:
 
 - `GATE_RADIUS`: Default radius for gates (default: 15 meters)
-- `UPDATE_INTERVAL`: How often to update race state (default: 0.1 seconds)
-- `countdownMax`: Countdown duration in seconds (default: 3)
+- `countdownMax`: Countdown duration in steps (default: 3)
 
 ## Notes
 
-- Players must be within the start gate radius when the race starts
-- The system tracks distance to the end gate in real-time during the race
+- Start and end gates are defined for reference purposes and to mark the race course
+- The countdown is progressed manually by an admin using `/race countdown` command
+- Players are asked not to move during countdown (honor system)
+- Finish times must be recorded manually by admins using `/race finish [player] [time]`
 - Leaderboard can be checked at any time during the race with `/race leaderboard`
 - If a player disconnects during a race, they are automatically removed from participants
 - Race can be stopped at any time by an admin using `/race stop`
 
-## Technical Details
+## Limitations & Future Enhancements
 
-### Position Format
+This implementation provides core race functionality within BeamMP's API constraints:
 
-Positions are specified as comma-separated values: `x,y,z[,radius]`
-- `x`, `y`, `z`: 3D coordinates in the game world
-- `radius`: (optional) Gate detection radius in meters
+**Current Limitations:**
+- Vehicle freezing is notification-based (honor system), not enforced
+- Position tracking and finish detection require manual admin input
+- Countdown must be manually progressed
 
-### Distance Calculation
+**Why These Limitations:**
+BeamMP's server-side Lua API doesn't provide:
+- Real-time vehicle position updates to the server
+- Server-side vehicle control (freezing/unfreezing)
+- Automated timer/tick events
 
-The system uses 3D Euclidean distance to calculate:
-- Whether vehicles are within gate boundaries
-- Distance to finish line for leaderboard ordering
-
-### Limitations
-
-This implementation provides the core race functionality. For production use, you may want to add:
-- Client-side vehicle position synchronization
+**Possible Future Enhancements:**
+- Client-side mod to send position updates to server
 - Visual gate markers in the game world
 - Support for multiple concurrent races
 - Race templates/presets for different tracks
 - Spectator mode
-- Anti-cheat mechanisms
+- Automated timing with client-side integration
