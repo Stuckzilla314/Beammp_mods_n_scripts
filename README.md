@@ -62,10 +62,10 @@ A comprehensive race management system with start/end gates, countdown timers, a
 
 **Features:**
 - Set custom start and end gates for race tracks
-- Automatic 3-second countdown before race start
-- Vehicle freeze during countdown for fair starts
-- Live leaderboard showing distance to finish
-- Finish time recording and final standings
+- Manual 3-step countdown before race start (admin-controlled)
+- Vehicle freeze notifications during countdown (honor system)
+- Manual finish time recording by admins
+- Leaderboard showing participants and finish times
 
 **Quick Start:**
 ```
@@ -77,7 +77,9 @@ A comprehensive race management system with start/end gates, countdown timers, a
 ```
 /race setstart x,y,z    # Set race start gate
 /race setend x,y,z      # Set race finish line
-/race start             # Begin the race
+/race start             # Begin the race countdown
+/race countdown         # Progress countdown (use 3x)
+/race finish name time  # Record a finish
 ```
 
 See [RaceManager README](Resources/Server/RaceManager/README.md) for full documentation.

@@ -116,10 +116,8 @@ local function stopRace()
     raceState.status = "idle"
     raceState.participants = {}
     raceState.finishedPlayers = {}
-    raceState.frozenVehicles = {}
     raceState.countdownTime = 0
     
-    -- Unfreeze all vehicles
     MP.SendChatMessage(-1, "Race has been stopped!")
     
     return true

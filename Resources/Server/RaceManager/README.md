@@ -65,9 +65,9 @@ A comprehensive race management system for BeamMP servers featuring start/end ga
 ### Race States
 
 1. **Idle**: No race in progress, players can join
-2. **Countdown**: 3-second countdown, vehicles are frozen
-3. **Racing**: Race in progress, leaderboard updates in real-time
-4. **Finished**: All racers have finished, final results displayed
+2. **Countdown**: Admin-controlled 3-step countdown (3, 2, 1), players notified not to move
+3. **Racing**: Race in progress, admin records finishes
+4. **Finished**: All racers have finished, final results displayed (automatically transitions when all finish)
 
 ### Leaderboard System
 
