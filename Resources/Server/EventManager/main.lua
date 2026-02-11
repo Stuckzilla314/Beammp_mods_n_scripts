@@ -8,6 +8,7 @@ local admins = {
 
 -- Event storage
 local events = {}
+local eventCount = 0
 local activeEvent = nil
 local eventParticipants = {}
 
@@ -25,6 +26,7 @@ end
 -- Register a new event
 function RegisterEvent(eventName, eventData)
     events[eventName] = eventData
+    eventCount = eventCount + 1
     print("[EventManager] Registered event: " .. eventName)
 end
 
@@ -224,12 +226,6 @@ function onInit()
     RegisterEvent("race", raceEvent)
     RegisterEvent("derby", derbyEvent)
     RegisterEvent("freeroam", freeRoamEvent)
-    
-    -- Count events
-    local eventCount = 0
-    for _ in pairs(events) do
-        eventCount = eventCount + 1
-    end
     
     print("[EventManager] Registered " .. eventCount .. " events")
     print("[EventManager] Use /events to list available events")

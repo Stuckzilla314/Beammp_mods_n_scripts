@@ -232,7 +232,8 @@ function onInit()
     -- Check if EventManager is available
     if not RegisterEvent then
         print("[CustomEvents] ERROR: EventManager not found!")
-        print("[CustomEvents] Make sure EventManager plugin is installed and loaded first")
+        print("[CustomEvents] Make sure EventManager plugin is installed in Resources/Server/EventManager")
+        print("[CustomEvents] and that it loads before CustomEvents plugin")
         return
     end
     

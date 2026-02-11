@@ -237,8 +237,11 @@ function onVehicleSpawn(playerID, vehicleID, vehicleData)
     
     -- Try to parse position from vehicle data
     -- Vehicle data format varies, this is a basic implementation
-    -- Position updates will be more accurate with client-side position reporting
+    -- Expected format: JSON string containing "pos":[x,y,z]
+    -- Note: This is a best-effort approach. Position tracking may not be 100% accurate.
+    -- If position tracking is unreliable, consider implementing client-side position reporting.
     if vehicleData and type(vehicleData) == "string" then
+        -- Pattern matches: "pos":[number,number,number] where number can be decimal or negative
         local x, y, z = string.match(vehicleData, "\"pos\":%[([%d%.%-]+),([%d%.%-]+),([%d%.%-]+)%]")
         if x and y and z then
             playerPositions[playerID] = {
