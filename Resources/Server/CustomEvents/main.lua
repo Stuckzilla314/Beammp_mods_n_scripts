@@ -35,8 +35,12 @@ local timeTrialEvent = {
     end,
     
     onStop = function()
-        local duration = os.time() - timeTrialEvent.startTime
-        MP.SendChatMessage(-1, "[EVENT] Time Trial event ended! Duration: " .. duration .. " seconds")
+        if timeTrialEvent.startTime then
+            local duration = os.time() - timeTrialEvent.startTime
+            MP.SendChatMessage(-1, "[EVENT] Time Trial event ended! Duration: " .. duration .. " seconds")
+        else
+            MP.SendChatMessage(-1, "[EVENT] Time Trial event ended!")
+        end
         
         -- Stop time trial on all clients
         local players = MP.GetPlayers()
@@ -44,6 +48,7 @@ local timeTrialEvent = {
             MP.TriggerClientEvent(tonumber(id), "stopTimeTrial", "")
         end
         
+        timeTrialEvent.startTime = nil
         return true
     end
 }

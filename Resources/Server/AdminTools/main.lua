@@ -228,10 +228,31 @@ function onChatMessage(playerID, playerName, message)
     return 0 -- Allow normal messages
 end
 
--- Track player positions
+-- Track player positions when vehicles spawn or move
 function onVehicleSpawn(playerID, vehicleID, vehicleData)
-    -- Parse position from vehicle data if available
-    -- This is a basic implementation - position tracking might need refinement
+    -- Initialize position tracking for this player if not already done
+    if not playerPositions[playerID] then
+        playerPositions[playerID] = {x = 0, y = 0, z = 0}
+    end
+    
+    -- Try to parse position from vehicle data
+    -- Vehicle data format varies, this is a basic implementation
+    -- Position updates will be more accurate with client-side position reporting
+    if vehicleData and type(vehicleData) == "string" then
+        local x, y, z = string.match(vehicleData, "\"pos\":%[([%d%.%-]+),([%d%.%-]+),([%d%.%-]+)%]")
+        if x and y and z then
+            playerPositions[playerID] = {
+                x = tonumber(x),
+                y = tonumber(y),
+                z = tonumber(z)
+            }
+        end
+    end
+end
+
+-- Remove position data when player disconnects
+function onPlayerDisconnect(playerID)
+    playerPositions[playerID] = nil
 end
 
 function onInit()
@@ -244,3 +265,4 @@ end
 MP.RegisterEvent("onInit", "onInit")
 MP.RegisterEvent("onChatMessage", "onChatMessage")
 MP.RegisterEvent("onVehicleSpawn", "onVehicleSpawn")
+MP.RegisterEvent("onPlayerDisconnect", "onPlayerDisconnect")

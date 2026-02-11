@@ -88,5 +88,7 @@ These events can be handled by client-side Lua scripts if you want to customize 
 
 ### Teleportation not working
 - Position tracking requires players to have spawned vehicles
+- Position data is extracted from vehicle spawn data when available
 - Try spawning a vehicle and moving around first
 - Check server logs for position data errors
+- Note: Position tracking may not be 100% accurate; consider it a best-effort feature

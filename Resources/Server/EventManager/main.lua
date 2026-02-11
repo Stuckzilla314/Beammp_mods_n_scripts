@@ -252,5 +252,5 @@ MP.RegisterEvent("onInit", "onInit")
 MP.RegisterEvent("onChatMessage", "onChatMessage")
 MP.RegisterEvent("onPlayerDisconnect", "onPlayerDisconnect")
 
--- Export functions for other plugins to use
-MP.RegisterEvent = RegisterEvent
+-- Export functions for other plugins to use (make RegisterEvent globally accessible)
+_G.RegisterEvent = RegisterEvent
