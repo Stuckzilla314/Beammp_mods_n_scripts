@@ -521,7 +521,13 @@ end
 
 -- Register events
 MP.RegisterEvent("DriftTelemetry", "onDriftTelemetry")
-MP.CreateEventHandler("Tick", onTick)
+
+-- Note: BeamMP timer creation varies by version.
+-- Check your BeamMP documentation for the correct timer API.
+-- Example alternatives:
+-- MP.CreateTimer(onTick, 1000)              -- Some versions
+-- MP.RegisterEvent("onTick", "onTick")      -- If onTick event exists
+-- Or implement as periodic event from client
 ```
 
 ## Resources

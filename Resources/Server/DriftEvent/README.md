@@ -164,23 +164,25 @@ For full functionality, you would need to implement one of these solutions:
 
 ### Integration Points
 
-The `onTick()` function includes pseudocode showing where to integrate vehicle data:
+The main.lua file includes detailed comments showing where to integrate vehicle data. The key function to call when telemetry is received is:
 
 ```lua
-function onTick()
-    -- Called periodically (every second)
-    for playerID, _ in pairs(playerStats) do
-        local vehicleData = getVehicleData(playerID)  -- Needs implementation
-        if vehicleData then
-            local isDrifting = detectDrift(vehicleData)
-            local angle = calculateDriftAngle(vehicleData)
-            local speed = getVehicleSpeed(vehicleData)
-            local proximity = getNearestObjectDistance(vehicleData)
-            updatePlayerDrift(playerID, isDrifting, angle, speed, proximity)
-        end
-    end
+-- When you receive vehicle telemetry data, call this function:
+updatePlayerDrift(playerID, isDrifting, slipAngle, speed, proximity)
+
+-- Example integration with custom telemetry event:
+function onDriftTelemetry(playerID, data)
+    if not driftEvent.active then return end
+    
+    local isDrifting = (data.slipAngle >= DRIFT_THRESHOLD.MIN_ANGLE and 
+                       data.speed >= DRIFT_THRESHOLD.MIN_SPEED)
+    updatePlayerDrift(playerID, isDrifting, data.slipAngle, data.speed, data.proximity)
 end
+
+MP.RegisterEvent("DriftTelemetry", "onDriftTelemetry")
 ```
+
+See INTEGRATION.md for complete implementation examples.
 
 ## Troubleshooting
 
