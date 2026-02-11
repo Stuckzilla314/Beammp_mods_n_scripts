@@ -146,7 +146,7 @@ local function displayLeaderboard(playerID)
     -- Show participants who haven't finished
     if raceState.status == "racing" or raceState.status == "countdown" then
         local unfinished = {}
-        for playerID, data in pairs(raceState.participants) do
+        for pID, data in pairs(raceState.participants) do
             if not data.finishTime then
                 table.insert(unfinished, data.name)
             end
@@ -284,32 +284,42 @@ function onChatMessage(playerID, playerName, message)
                     return 1
                 end
                 
-                local playerName, timeStr = string.match(command, "race finish%s+(%S+)%s+(%S+)")
-                if playerName and timeStr then
-                    local finishTime = tonumber(timeStr)
-                    if finishTime then
-                        -- Find player in participants
-                        local foundPlayerID = nil
-                        for pID, data in pairs(raceState.participants) do
-                            if data.name == playerName then
-                                foundPlayerID = pID
-                                break
-                            end
-                        end
+                -- Match everything after "race finish " and split by last space to get time
+                local args = string.match(command, "race finish%s+(.+)")
+                if args then
+                    -- Find the last space to split name and time
+                    local lastSpace = args:match("^.*()%s")
+                    if lastSpace then
+                        local playerName = args:sub(1, lastSpace - 1)
+                        local timeStr = args:sub(lastSpace + 1)
+                        local finishTime = tonumber(timeStr)
                         
-                        if foundPlayerID and not raceState.participants[foundPlayerID].finishTime then
-                            raceState.participants[foundPlayerID].finishTime = finishTime
-                            table.insert(raceState.finishedPlayers, {
-                                name = playerName,
-                                time = finishTime,
-                                position = #raceState.finishedPlayers + 1
-                            })
-                            MP.SendChatMessage(-1, playerName .. " finished in position #" .. #raceState.finishedPlayers .. "! Time: " .. string.format("%.2f", finishTime) .. "s")
+                        if finishTime then
+                            -- Find player in participants
+                            local foundPlayerID = nil
+                            for pID, data in pairs(raceState.participants) do
+                                if data.name == playerName then
+                                    foundPlayerID = pID
+                                    break
+                                end
+                            end
+                            
+                            if foundPlayerID and not raceState.participants[foundPlayerID].finishTime then
+                                raceState.participants[foundPlayerID].finishTime = finishTime
+                                table.insert(raceState.finishedPlayers, {
+                                    name = playerName,
+                                    time = finishTime,
+                                    position = #raceState.finishedPlayers + 1
+                                })
+                                MP.SendChatMessage(-1, playerName .. " finished in position #" .. #raceState.finishedPlayers .. "! Time: " .. string.format("%.2f", finishTime) .. "s")
+                            else
+                                MP.SendChatMessage(playerID, "Player not found or already finished!")
+                            end
                         else
-                            MP.SendChatMessage(playerID, "Player not found or already finished!")
+                            MP.SendChatMessage(playerID, "Invalid time format!")
                         end
                     else
-                        MP.SendChatMessage(playerID, "Invalid time format!")
+                        MP.SendChatMessage(playerID, "Usage: /race finish [playerName] [time]")
                     end
                 else
                     MP.SendChatMessage(playerID, "Usage: /race finish [playerName] [time]")
