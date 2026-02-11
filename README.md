@@ -102,7 +102,35 @@ BeamMP provides several events you can hook into:
 - `onVehicleSpawn` - When a vehicle is spawned
 - `onVehicleDeleted` - When a vehicle is deleted
 
-## 🎮 Available Plugins
+
+## 🏁 Available Plugins
+
+### RaceManager
+A comprehensive race management system with start/end gates, countdown timers, and real-time leaderboards.
+
+**Features:**
+- Set custom start and end gates for race tracks
+- Manual 3-step countdown before race start (admin-controlled)
+- Vehicle freeze notifications during countdown (honor system)
+- Manual finish time recording by admins
+- Leaderboard showing participants and finish times
+
+**Quick Start:**
+```
+/race join              # Join the race
+/race leaderboard       # View current standings
+```
+
+**Admin Commands:**
+```
+/race setstart x,y,z    # Set race start gate
+/race setend x,y,z      # Set race finish line
+/race start             # Begin the race countdown
+/race countdown         # Progress countdown (use 3x)
+/race finish name time  # Record a finish
+```
+
+See [RaceManager README](Resources/Server/RaceManager/README.md) for full documentation.
 
 ### DriftEvent
 Professional drift competition system with real-time scoring and leaderboards.
@@ -122,6 +150,7 @@ Professional drift competition system with real-time scoring and leaderboards.
 - `/drifthelp` - Show help
 
 **Documentation:** See [DriftEvent README](Resources/Server/DriftEvent/README.md)
+
 
 ### AdminTools
 Basic admin commands for server management (kick, announce).
