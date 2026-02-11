@@ -540,3 +540,4 @@ For questions about integration:
 ---
 
 **Note:** The exact implementation details depend on your BeamMP server version and available APIs. Consult the latest BeamMP documentation for specific function names and data formats.
+

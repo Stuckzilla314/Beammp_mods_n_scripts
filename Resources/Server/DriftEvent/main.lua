@@ -401,35 +401,47 @@ function onVehicleSpawn(playerID, vehicleID, vehicleData)
     end
 end
 
--- Timer to check event status and update scores
--- This would be called periodically by BeamMP or via a timer system
-local lastTimerCheck = os.time()
-function onTick()
-    local currentTime = os.time()
-    
-    -- Check every second
-    if currentTime - lastTimerCheck >= 1 then
-        lastTimerCheck = currentTime
-        checkEventTimer()
-        
-        -- In a real implementation, you would:
-        -- 1. Get vehicle data for each player
-        -- 2. Calculate drift angle, speed, proximity
-        -- 3. Call updatePlayerDrift() with actual values
-        -- 
-        -- Example (pseudocode):
-        -- for playerID, _ in pairs(playerStats) do
-        --     local vehicleData = getVehicleData(playerID)
-        --     if vehicleData then
-        --         local isDrifting = detectDrift(vehicleData)
-        --         local angle = calculateDriftAngle(vehicleData)
-        --         local speed = getVehicleSpeed(vehicleData)
-        --         local proximity = getNearestObjectDistance(vehicleData)
-        --         updatePlayerDrift(playerID, isDrifting, angle, speed, proximity)
-        --     end
-        -- end
-    end
-end
+-- ============================================================================
+-- DRIFT DETECTION (Requires Integration)
+-- ============================================================================
+
+-- Note: BeamMP doesn't expose vehicle telemetry directly in the base Lua API.
+-- To enable real-time drift scoring, you need to implement one of these methods:
+--
+-- Method 1: Client-Side Telemetry Mod (Recommended)
+--   - Create a client mod that monitors vehicle data
+--   - Send data to server via MP.TriggerServerEvent()
+--   - Handle in a custom event handler
+--
+-- Method 2: Parse Vehicle Data Packets
+--   - Hook into BeamMP's vehicle data events
+--   - Extract angle, speed, and position from packets
+--
+-- Method 3: Timer-Based Polling
+--   - Use MP.CreateTimer() for periodic checks
+--   - Poll available vehicle information
+--
+-- See INTEGRATION.md for complete implementation examples.
+--
+-- Example event handler for client telemetry:
+--
+-- function onDriftTelemetry(playerID, data)
+--     if not driftEvent.active then return end
+--     
+--     local isDrifting = (data.slipAngle >= DRIFT_THRESHOLD.MIN_ANGLE and 
+--                        data.speed >= DRIFT_THRESHOLD.MIN_SPEED)
+--     updatePlayerDrift(playerID, isDrifting, data.slipAngle, data.speed, data.proximity)
+-- end
+-- 
+-- MP.RegisterEvent("DriftTelemetry", "onDriftTelemetry")
+--
+-- Example timer for event management:
+--
+-- function checkEventTimerPeriodic()
+--     checkEventTimer()
+-- end
+--
+-- MP.CreateTimer(checkEventTimerPeriodic, 1000)  -- Check every second
 
 -- ============================================================================
 -- REGISTER EVENTS
@@ -441,8 +453,4 @@ MP.RegisterEvent("onPlayerDisconnect", "onPlayerDisconnect")
 MP.RegisterEvent("onChatMessage", "onChatMessage")
 MP.RegisterEvent("onVehicleSpawn", "onVehicleSpawn")
 
--- Note: BeamMP doesn't have a built-in onTick event
--- The actual drift detection would need to be implemented via:
--- 1. Client-side mod that sends vehicle telemetry to server
--- 2. Server parsing vehicle data packets
--- 3. Custom event system for periodic updates
+
